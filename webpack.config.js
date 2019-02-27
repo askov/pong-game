@@ -23,7 +23,7 @@ module.exports = env => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        title: 'FCC: Build a Pong Game'
+        template: 'index.ejs',
       })
     ]
   }

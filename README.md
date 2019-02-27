@@ -1,4 +1,4 @@
-#FCC: Build a Pong Game
+# FCC: Build a Pong Game
 
 - Objective: Build a CodePen.io app that is functionally similar to this: https://codepen.io/satyamdev/full/pdMmBp.
 - Rule #1: Don't look at the example project's code. Figure it out for yourself.
