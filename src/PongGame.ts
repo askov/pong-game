@@ -4,6 +4,12 @@ import {
 import {
   Ball
 } from './Ball';
+import {
+  Player
+} from './Player';
+import {
+  ComputerPlayer
+} from './ComputerPlayer';
 import './styles/index.css';
 
 enum GameState {
@@ -17,6 +23,14 @@ export class PongGame {
   private _gameField = new GameField('blue', 400, 200);
   private _ball = new Ball('white', 5, 20, 20, 1, 1);
   private _gameState = GameState.Running;
+  private _player1 = new Player('Player 1');
+  private _player2 = new ComputerPlayer('Player 2', {
+    x: 395,
+    y: 10,
+    width: 5,
+    height: 40,
+    color: 'gold'
+  });
 
   constructor(private _canvas: HTMLCanvasElement) {}
 
@@ -58,6 +72,21 @@ export class PongGame {
     move();
   }
 
+  private drawPaddles(): void {
+    const {
+      color,
+      x,
+      y,
+      width,
+      height
+    } = this._player2.getPaddleConfig();
+    // console.log('height', height)
+  //   const [x, y] = this._player2.getPaddlePosition();
+  //   const [width, height] = this._player2.getPaddleSize();
+    this._ctx.fillStyle = color;
+    this._ctx.fillRect(x, y, width, height);
+  }
+
   private drawBackground(): void {
     const {
       color,
@@ -74,6 +103,8 @@ export class PongGame {
     this.drawBackground();
     // Ball
     this.drawBall();
+    // Paddles
+    this.drawPaddles();
 
     window.requestAnimationFrame(this.draw);
   }

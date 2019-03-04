@@ -1,13 +1,18 @@
 export class Paddle {
-  constructor(
-    private _x: number = 0,
-    private _y: number = 0,
-    private _color: string = 'white',
-    private _width: number = 10,
-    private _height: number = 80,
-    private _vx: number = 0,
-    private _vy: number = 1,
-    ) {
+  [key: string]: any;
+
+  private _x: number = 0;
+  private _y: number = 0;
+  private _color: string = 'white';
+  private _width: number = 10;
+  private _height: number = 80;
+  private _vx: number = 0;
+  private _vy: number = 0;
+
+  constructor(config?: Partial<PaddleConfig>) {
+    Object.keys(config || {}).forEach((key: keyof PaddleConfig) => {
+      this[`_${key}`] = config[key];
+    });
   }
 
   get color(): string {
@@ -23,7 +28,7 @@ export class Paddle {
   }
 
   get vx(): number {
-    return this._vx;
+    return this.vx;
   }
 
   get vy(): number {
@@ -42,6 +47,5 @@ export class Paddle {
     this._x += this._vx;
     this._y += this._vy;
   }
-
 
 }
