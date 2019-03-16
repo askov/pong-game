@@ -3,7 +3,7 @@ import {
 } from './Paddle';
 
 export class Player {
-  private _score: number;
+  private _score: number = 0;
   private paddle = new Paddle(
     this.paddleConfig,
     );
@@ -29,6 +29,10 @@ export class Player {
     if (this._score > 0) {
       this._score -= 1;
     }
+  }
+
+  movePaddle(y: number) {
+    this.paddle.y = y;
   }
 
   getPaddleConfig(): PaddleConfig {
