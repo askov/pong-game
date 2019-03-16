@@ -43,9 +43,22 @@ export class Paddle {
     return this._height;
   }
 
-  move(): void {
-    this._x += this._vx;
-    this._y += this._vy;
+  set x(x: number) {
+    this._x = x;
   }
+
+  set y(y: number) {
+    this._y = y;
+  }
+
+
+  // move(x: number, y: number): void {
+  //   this._x += x;
+  //   this._y += y;
+  // }
+  // move(): void {
+  //   //   this._x += this._vx;
+  //   //   this._y += this._vy;
+  //   // }
 
 }
