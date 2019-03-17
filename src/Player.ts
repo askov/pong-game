@@ -2,6 +2,8 @@ import {
   Paddle
 } from './Paddle';
 
+import { PaddlePosition} from "./Config";
+
 export class Player {
   private _score: number = 0;
   private paddle = new Paddle(
@@ -11,7 +13,9 @@ export class Player {
   constructor(
     private _name: string = 'Player',
     private paddleConfig?: PaddleConfig,
-    ) { }
+    private _paddlePosition = PaddlePosition.Left,
+
+  ) { }
 
   get name(): string {
     return this._name;
@@ -21,14 +25,12 @@ export class Player {
     return this._score;
   }
 
-  incrementScore(): void {
-    this._score += 1;
+  get paddlePosition(): PaddlePosition {
+    return this._paddlePosition;
   }
 
-  decrementScore(): void {
-    if (this._score > 0) {
-      this._score -= 1;
-    }
+  incrementScore(): void {
+    this._score += 1;
   }
 
   movePaddle(y: number) {
@@ -43,5 +45,9 @@ export class Player {
       x: this.paddle.x,
       y: this.paddle.y,
     }
+  }
+
+  reset(): void {
+    this._score = 0;
   }
 }

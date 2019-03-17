@@ -19,20 +19,28 @@ export class GameField {
     return this._height;
   }
 
+  get halfWidth(): number {
+    return Math.floor(this._width / 2);
+  }
+
+  get halfHeight(): number {
+    return Math.floor(this._height / 2);
+  }
+
   isLeftBorder = (x: number): boolean => {
-    return x === 0;
+    return x <= 0;
   }
 
   isRightBorder = (x: number): boolean => {
-    return x === this._width;
+    return x >= this._width;
   }
 
   isTopBorder = (y: number): boolean => {
-    return y === 0;
+    return y <= 0;
   }
 
   isBottomBorder = (y: number): boolean => {
-     return y === this._height;
+     return y >= this._height;
   }
 
 }
