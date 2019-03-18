@@ -12,72 +12,43 @@ import {
 } from './ComputerPlayer';
 import './styles/index.css';
 
-import { PaddlePosition} from "./Config";
 
 enum GameState {
   Running,
   Finished,
 }
 
+enum BallZone {
+  Center,
+  Out,
+  Reflect,
+}
 
 export class PongGame {
   private readonly maxScore = 3;
+  private readonly paddleWidth = 20;
   private _ctx: CanvasRenderingContext2D;
   private _gameField = new GameField('#303030', window.innerWidth, window.innerHeight);
-  private _ball = new Ball('white', 10, 0, 0, 5, 4);
+  private _ball = new Ball('white', 10, 0, 0, 8, 4);
   private _gameState = GameState.Running;
-  private _player1 = new Player('Player 1', {
+  private _player1 = new Player('You', {
     x: 0,
     y: 10,
-    width: 10,
+    width: this.paddleWidth,
     height: 90,
-    color: '#aaefff',
-  }, PaddlePosition.Left);
-  private _player2 = new ComputerPlayer('Player 2', {
-    x: (window.innerWidth - 10),
+    color: 'white',
+  });
+  private _player2 = new ComputerPlayer('Computer', {
+    x: (window.innerWidth - this.paddleWidth),
     y: 10,
-    width: 10,
+    width: this.paddleWidth,
     height: 90,
-    color: '#f4d142'
-  }, PaddlePosition.Right);
+    color: 'white'
+  });
 
   constructor(private _canvas: HTMLCanvasElement) {}
 
-  checkBallContactWithLeftPaddle(): boolean {
-    const { width , y: paddleY, height} = this._player1.getPaddleConfig();
-    const {
-      x,
-      y,
-      radius,
-      reverseVxDirection,
-    } = this._ball;
-    if ((x - radius) <= 0 + width) {
-      if ((y > (paddleY - radius)) && (y < (paddleY + height + radius))) {
-        reverseVxDirection();
-        return true;
-      }
-    }
-  }
-
-
-  checkBallContactWithRightPaddle(): boolean {
-    const { width , y: paddleY, height} = this._player2.getPaddleConfig();
-    const {
-      x,
-      y,
-      radius,
-      reverseVxDirection,
-    } = this._ball;
-    if ((x + radius) >= this._gameField.width - width) {
-      if ((y > (paddleY - radius)) && (y < (paddleY + height + radius))) {
-        reverseVxDirection();
-        return true;
-      }
-    }
-  }
-
-  // todo
-  checkBallContactWithPaddle(player: Player): boolean {
+  private getCurrentBallZone(player: Player): BallZone {
     const { width , y: paddleY, height, } = player.getPaddleConfig();
     const {
       x,
@@ -85,21 +56,18 @@ export class PongGame {
       radius,
     } = this._ball;
 
-    const isWithinPaddle = () => {
-      return (y > (paddleY - radius)) && (y < (paddleY + height + radius));
+    if (
+        (x - radius <= 0 + width) ||
+        (x + radius >= this._gameField.width - width)
+    ) {
+      if ((y > (paddleY - radius)) && (y < (paddleY + height + radius))) {
+        return BallZone.Reflect;
+      }
+      return BallZone.Out;
+
     }
 
-    if (player.paddlePosition === PaddlePosition.Left) {
-      if ((x - radius) <= 0 + width) {
-        return isWithinPaddle();
-      }
-    } else {
-      if ((x + radius) >= this._gameField.width - width) {
-        return isWithinPaddle();
-      }
-    }
-
-    return false;
+    return BallZone.Center;
   }
 
   private resetBallPosition() {
@@ -110,6 +78,16 @@ export class PongGame {
 
     this._ball.x = halfWidth - Math.floor(this._ball.radius / 2);
     this._ball.y = halfHeight - Math.floor(this._ball.radius / 2);
+  }
+
+  private resetBallDirection() {
+    this._ball.reverseVxDirection();
+    this._ball.reverseVyDirection();
+  }
+
+  private resetBall() {
+    this.resetBallPosition();
+    this.resetBallDirection();
   }
 
   private drawBall(): void {
@@ -139,8 +117,6 @@ export class PongGame {
     const {
       isTopBorder,
       isBottomBorder,
-      isLeftBorder,
-      isRightBorder
     } = this._gameField;
 
     if (
@@ -151,21 +127,23 @@ export class PongGame {
     }
 
 
-    // todo
-    if (!this.checkBallContactWithLeftPaddle()) {
-      if (isRightBorder(x + radius)) {
-        this._player1.incrementScore();
-        reverseVxDirection();
-        this.resetBallPosition();
-      }
-    }
+    // Here player is the one "under strike", i.e.
+    // player     <-o   opponent
+    // opponent   o->   player
+    const [player, opponent] = this._ball.vx > 0
+        ? [this._player2, this._player1]
+        : [this._player1, this._player2];
 
-    if (!this.checkBallContactWithRightPaddle()) {
-      if(isLeftBorder(x - radius)) {
-        this._player2.incrementScore();
-        reverseVxDirection();
-        this.resetBallPosition();
-      }
+    const ballState = this.getCurrentBallZone(player);
+
+    // To simplify the check we assume that player is already lost, when the ball is out
+    // but not when ball is on the appropriate field border
+    if (ballState === BallZone.Reflect) {
+      reverseVxDirection();
+    }
+    if (ballState === BallZone.Out) {
+      opponent.incrementScore();
+      this.resetBall();
     }
 
     move();
@@ -338,7 +316,7 @@ export class PongGame {
       // Events
       this.addCanvasListeners(this._canvas);
       // Ball
-      this.resetBallPosition();
+      this.resetBall();
       // Main
       window.requestAnimationFrame(this.run);
     }
