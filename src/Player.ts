@@ -5,7 +5,7 @@ import {
 
 export class Player {
   private _score: number = 0;
-  private paddle = new Paddle(
+  readonly paddle = new Paddle(
     this.paddleConfig,
     );
 

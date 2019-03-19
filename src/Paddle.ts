@@ -51,7 +51,43 @@ export class Paddle {
     this._y = y;
   }
 
+  draw(ctx: CanvasRenderingContext2D): void {
+    const {color, x, y, width, height} = this;
+    ctx.fillStyle = color;
+    ctx.fillRect(x, y, width, height);
+  }
 
+  private calculatePaddleYByTargetYx(paddleHeight: number, y: number) {
+    const halfPaddleHeight = Math.floor(paddleHeight / 2 );
+    const minYLimit = halfPaddleHeight;
+    const maxYLimit = this._gameField.height - halfPaddleHeight;
+    if (y < minYLimit) {
+      return 0;
+    }
+    if (y > maxYLimit) {
+      return this._gameField.height - paddleHeight;
+    }
+    return y - halfPaddleHeight;
+  }
+
+  private calculateYByTargetY(targetY: number, fieldHeight: number) {
+    const halfPaddleHeight = Math.floor(this.height / 2 );
+    const minYLimit = halfPaddleHeight;
+    const maxYLimit = fieldHeight - halfPaddleHeight;
+    // console.log('#some', targetY, halfPaddleHeight);
+    if (targetY < minYLimit) {
+      return 0;
+    }
+    if (targetY > maxYLimit) {
+      console.log('#132', fieldHeight - this.heigth);
+      return fieldHeight - this.height;
+    }
+    return targetY - halfPaddleHeight;
+  }
+
+  setPaddleCenterToY(y: number, fieldHeight: number) {
+    this.y = this.calculateYByTargetY(y, fieldHeight);
+  }
   // move(x: number, y: number): void {
   //   this._x += x;
   //   this._y += y;

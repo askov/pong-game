@@ -49,7 +49,30 @@ export class Ball {
   reverseVyDirection = () => {
     this._vy *= -1;
   }
+
   reverseVxDirection = () => {
     this._vx *= -1;
+  }
+
+  draw(ctx: CanvasRenderingContext2D): void {
+    ctx.fillStyle = this._color;
+    ctx.beginPath();
+    ctx.arc(this._x, this._y, this._radius, 0, 2 * Math.PI);
+    ctx.fill();
+  }
+
+  resetPositionToContainerCenter(containerHalfWidth: number, containerHalfHeight: number): void {
+    this._x = containerHalfWidth - Math.floor(this._radius / 2);
+    this._y = containerHalfHeight - Math.floor(this._radius / 2);
+  }
+
+  resetDirection(): void {
+    this.reverseVxDirection();
+    this.reverseVyDirection();
+  }
+
+  resetBall(containerHalfWidth: number, containerHalfHeight: number): void {
+    this.resetPositionToContainerCenter(containerHalfWidth, containerHalfHeight);
+    this.resetDirection();
   }
 }

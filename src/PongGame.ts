@@ -48,6 +48,8 @@ export class PongGame {
 
   constructor(private _canvas: HTMLCanvasElement) {}
 
+
+  // Ball
   private getCurrentBallZone(player: Player): BallZone {
     const { width , y: paddleY, height, } = player.getPaddleConfig();
     const {
@@ -70,44 +72,17 @@ export class PongGame {
     return BallZone.Center;
   }
 
-  private resetBallPosition() {
+  private resetBall() {
     const {
       halfHeight,
       halfWidth,
     } = this._gameField;
-
-    this._ball.x = halfWidth - Math.floor(this._ball.radius / 2);
-    this._ball.y = halfHeight - Math.floor(this._ball.radius / 2);
-  }
-
-  private resetBallDirection() {
-    this._ball.reverseVxDirection();
-    this._ball.reverseVyDirection();
-  }
-
-  private resetBall() {
-    this.resetBallPosition();
-    this.resetBallDirection();
-  }
-
-  private drawBall(): void {
-    const {
-      radius,
-      color,
-      x,
-      y,
-    } = this._ball;
-
-    this._ctx.fillStyle = color;
-    this._ctx.beginPath();
-    this._ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    this._ctx.fill();
+    this._ball.resetBall(halfWidth, halfHeight);
   }
 
   private moveBall(): void {
     const {
       radius,
-      x,
       y,
       reverseVxDirection,
       reverseVyDirection,
@@ -149,76 +124,29 @@ export class PongGame {
     move();
   }
 
-  private calculatePaddleYByTargetY(paddleHeight: number, y: number) {
-    const halfPaddleHeight = Math.floor(paddleHeight / 2 );
-    const minYLimit = halfPaddleHeight;
-    const maxYLimit = this._gameField.height - halfPaddleHeight;
-    if (y < minYLimit) {
-      return 0;
-    }
-    if (y > maxYLimit) {
-      return this._gameField.height - paddleHeight;
-    }
-    return y - halfPaddleHeight;
-  }
-
+  // Paddles
   private drawPaddles(): void {
     const players = [this._player1, this._player2];
 
     players.forEach(player => {
-      const { x, y ,width, height, color } = player.getPaddleConfig();
-      this._ctx.fillStyle = color;
-      this._ctx.fillRect(x, y, width, height);
+      player.paddle.draw(this._ctx);
     })
   }
 
-  private drawBackground(): void {
-    const {
-      color,
-      width,
-      halfWidth,
-      height
-    } = this._gameField;
-    this._ctx.fillStyle = color;
-    this._ctx.fillRect(0, 0, width, height);
-
-    // Middle line
-    this._ctx.beginPath();
-    this._ctx.strokeStyle = 'white';
-    this._ctx.moveTo(halfWidth, 0);
-    this._ctx.setLineDash([8, 3]);
-    this._ctx.lineTo(halfWidth, height);
-    this._ctx.stroke();
+  private moveComputerPaddle(): void {
+    const { height } = this._gameField;
+    const { y } = this._ball;
+    this._player2.paddle.setPaddleCenterToY(y, height);
   }
 
-  private drawScore(): void {
-    // Font presets
-    const fontSize = 100;
-    this._ctx.font = `${fontSize}px Arial`;
-    this._ctx.strokeStyle = 'gray';
-    this._ctx.textBaseline = "middle";
-    this._ctx.setLineDash([]);
+  private movePlayerPaddle(y: number): void {
+    const { height } = this._gameField;
+    this._player1.paddle.setPaddleCenterToY(y, height);
+  }
 
-    const {
-      width,
-      halfHeight
-    } = this._gameField;
-
-    // Player 1
-    const score1 = `${this._player1.score}`;
-    this._ctx.strokeText(
-        score1,
-        Math.floor(width * 0.1),
-        halfHeight
-    );
-
-  //  Player 2
-    const score2 = `${this._player2.score}`;
-    this._ctx.strokeText(
-        score2,
-        Math.floor(width * 0.9) - this._ctx.measureText(score2).width,
-        halfHeight
-    );
+  // Game state
+  private updateGameState(gameState: GameState) {
+    this._gameState = gameState;
   }
 
   private drawFinalScreen(winnerName: string): void {
@@ -235,30 +163,16 @@ export class PongGame {
     const text = `${winnerName} won! Click to play again`;
     const halfTextWidth = Math.floor(this._ctx.measureText(text).width / 2);
     this._ctx.fillText(text, halfWidth - halfTextWidth, halfHeight);
-
   }
 
-  private autoMoveComputerPaddle(): void {
-    const { height } = this._player2.getPaddleConfig();
-    const { y } = this._ball;
-    const paddlePos = this.calculatePaddleYByTargetY(height, y);
-    this._player2.movePaddle(paddlePos);
-  }
-
+  // Handlers
   private resizeCanvas() {
     this._ctx.canvas.width = this._gameField.width;
     this._ctx.canvas.height = this._gameField.height;
   }
 
-  private updateGameState(gameState: GameState) {
-    this._gameState = gameState;
-  }
-
   private handleMouseMove(y: number) {
-    const { height } = this._player1.getPaddleConfig();
-    const paddlePos = this.calculatePaddleYByTargetY(height, y);
-
-    this._player1.movePaddle(paddlePos);
+    this.movePlayerPaddle(y);
   }
 
   private handleMouseClick() {
@@ -277,6 +191,7 @@ export class PongGame {
     });
   }
 
+  // Main
   private run = (): void => {
     if (this._player1.score === this.maxScore) {
       this.updateGameState(GameState.Finished);
@@ -286,14 +201,12 @@ export class PongGame {
       this.updateGameState(GameState.Finished);
     } else {
       // Computer turn
-      this.autoMoveComputerPaddle();
+      this.moveComputerPaddle();
       // Background
-      this.drawBackground();
-      // Score
-      this.drawScore();
+      this._gameField.draw(this._ctx, this._player1.score, this._player2.score);
       // Ball
       this.moveBall();
-      this.drawBall();
+      this._ball.draw(this._ctx);
       // Paddles
       this.drawPaddles();
       window.requestAnimationFrame(this.run);
