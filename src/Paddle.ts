@@ -88,13 +88,4 @@ export class Paddle {
   setPaddleCenterToY(y: number, fieldHeight: number) {
     this.y = this.calculateYByTargetY(y, fieldHeight);
   }
-  // move(x: number, y: number): void {
-  //   this._x += x;
-  //   this._y += y;
-  // }
-  // move(): void {
-  //   //   this._x += this._vx;
-  //   //   this._y += this._vy;
-  //   // }
-
 }

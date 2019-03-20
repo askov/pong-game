@@ -55,9 +55,9 @@ export class Ball {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    ctx.fillStyle = this._color;
+    ctx.fillStyle = this.color;
     ctx.beginPath();
-    ctx.arc(this._x, this._y, this._radius, 0, 2 * Math.PI);
+    ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
     ctx.fill();
   }
 

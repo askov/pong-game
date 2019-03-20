@@ -8,8 +8,9 @@ import {
   Player
 } from './Player';
 import {
-  ComputerPlayer
-} from './ComputerPlayer';
+  FinalScreen
+} from './FinalScreen';
+
 import './styles/index.css';
 
 
@@ -27,27 +28,28 @@ enum BallZone {
 export class PongGame {
   private readonly maxScore = 3;
   private readonly paddleWidth = 20;
-  private _ctx: CanvasRenderingContext2D;
-  private _gameField = new GameField('#303030', window.innerWidth, window.innerHeight);
-  private _ball = new Ball('white', 10, 0, 0, 8, 4);
-  private _gameState = GameState.Running;
-  private _player1 = new Player('You', {
-    x: 0,
-    y: 10,
-    width: this.paddleWidth,
-    height: 90,
-    color: 'white',
-  });
-  private _player2 = new ComputerPlayer('Computer', {
-    x: (window.innerWidth - this.paddleWidth),
-    y: 10,
-    width: this.paddleWidth,
-    height: 90,
-    color: 'white'
-  });
+  private ctx: CanvasRenderingContext2D;
+  private field = new GameField('#303030', window.innerWidth, window.innerHeight);
+  private ball = new Ball('white', 10, 0, 0, 8, 4);
+  private state = GameState.Running;
+  private players =[
+    new Player('You', {
+      x: 0,
+      y: 10,
+      width: this.paddleWidth,
+      height: 90,
+      color: 'white',
+    }),
+    new Player('Computer', {
+      x: (window.innerWidth - this.paddleWidth),
+      y: 10,
+      width: this.paddleWidth,
+      height: 90,
+      color: 'white'
+    }),
+  ];
 
-  constructor(private _canvas: HTMLCanvasElement) {}
-
+  constructor(private canvas: HTMLCanvasElement) {}
 
   // Ball
   private getCurrentBallZone(player: Player): BallZone {
@@ -56,17 +58,16 @@ export class PongGame {
       x,
       y,
       radius,
-    } = this._ball;
+    } = this.ball;
 
     if (
         (x - radius <= 0 + width) ||
-        (x + radius >= this._gameField.width - width)
+        (x + radius >= this.field.width - width)
     ) {
       if ((y > (paddleY - radius)) && (y < (paddleY + height + radius))) {
         return BallZone.Reflect;
       }
       return BallZone.Out;
-
     }
 
     return BallZone.Center;
@@ -76,8 +77,8 @@ export class PongGame {
     const {
       halfHeight,
       halfWidth,
-    } = this._gameField;
-    this._ball.resetBall(halfWidth, halfHeight);
+    } = this.field;
+    this.ball.resetBall(halfWidth, halfHeight);
   }
 
   private moveBall(): void {
@@ -87,12 +88,12 @@ export class PongGame {
       reverseVxDirection,
       reverseVyDirection,
       move
-    } = this._ball;
+    } = this.ball;
 
     const {
       isTopBorder,
       isBottomBorder,
-    } = this._gameField;
+    } = this.field;
 
     if (
         isBottomBorder(y + radius) ||
@@ -101,13 +102,12 @@ export class PongGame {
       reverseVyDirection();
     }
 
-
     // Here player is the one "under strike", i.e.
     // player     <-o   opponent
     // opponent   o->   player
-    const [player, opponent] = this._ball.vx > 0
-        ? [this._player2, this._player1]
-        : [this._player1, this._player2];
+    const [player, opponent] = this.ball.vx > 0
+        ? [...this.players].reverse()
+        : this.players;
 
     const ballState = this.getCurrentBallZone(player);
 
@@ -126,49 +126,31 @@ export class PongGame {
 
   // Paddles
   private drawPaddles(): void {
-    const players = [this._player1, this._player2];
-
-    players.forEach(player => {
-      player.paddle.draw(this._ctx);
-    })
+    this.players.forEach(player => {
+      player.drawPaddle(this.ctx);
+    });
   }
 
   private moveComputerPaddle(): void {
-    const { height } = this._gameField;
-    const { y } = this._ball;
-    this._player2.paddle.setPaddleCenterToY(y, height);
+    const { height } = this.field;
+    const { y } = this.ball;
+    this.players[1].movePaddle(y, height);
   }
 
   private movePlayerPaddle(y: number): void {
-    const { height } = this._gameField;
-    this._player1.paddle.setPaddleCenterToY(y, height);
+    const { height } = this.field;
+    this.players[0].movePaddle(y, height);
   }
 
   // Game state
   private updateGameState(gameState: GameState) {
-    this._gameState = gameState;
-  }
-
-  private drawFinalScreen(winnerName: string): void {
-    const {
-      halfHeight,
-      halfWidth,
-      width,
-      height
-    } = this._gameField;
-    this._ctx.fillStyle = '#6b42f4';
-    this._ctx.fillRect(0, 0, width, height);
-    this._ctx.font = `${40}px Arial`;
-    this._ctx.fillStyle = 'white';
-    const text = `${winnerName} won! Click to play again`;
-    const halfTextWidth = Math.floor(this._ctx.measureText(text).width / 2);
-    this._ctx.fillText(text, halfWidth - halfTextWidth, halfHeight);
+    this.state = gameState;
   }
 
   // Handlers
   private resizeCanvas() {
-    this._ctx.canvas.width = this._gameField.width;
-    this._ctx.canvas.height = this._gameField.height;
+    this.ctx.canvas.width = this.field.width;
+    this.ctx.canvas.height = this.field.height;
   }
 
   private handleMouseMove(y: number) {
@@ -176,7 +158,7 @@ export class PongGame {
   }
 
   private handleMouseClick() {
-    if (this._gameState === GameState.Finished) {
+    if (this.state === GameState.Finished) {
       this.restart();
     }
   }
@@ -193,41 +175,38 @@ export class PongGame {
 
   // Main
   private run = (): void => {
-    if (this._player1.score === this.maxScore) {
+    const winner = this.players.find(player => player.isWinner(this.maxScore));
+    if (winner) {
       this.updateGameState(GameState.Finished);
-      this.drawFinalScreen(this._player1.name);
-    } else if (this._player2.score === this.maxScore) {
-      this.drawFinalScreen(this._player2.name);
-      this.updateGameState(GameState.Finished);
+      // this.drawFinalScreen(winner.name);
+      FinalScreen.draw(this.ctx, winner.name, this.field);
     } else {
       // Computer turn
       this.moveComputerPaddle();
       // Background
-      this._gameField.draw(this._ctx, this._player1.score, this._player2.score);
+      this.field.draw(this.ctx, this.players[0].score, this.players[1].score);
       // Ball
       this.moveBall();
-      this._ball.draw(this._ctx);
+      this.ball.draw(this.ctx);
       // Paddles
       this.drawPaddles();
       window.requestAnimationFrame(this.run);
     }
-
   }
 
   private restart() {
     this.updateGameState(GameState.Running);
     // Score
-    this._player1.reset();
-    this._player2.reset();
+    this.players.forEach(player => player.reset());
     this.start();
   }
 
   start(): void {
-    if (this._canvas && this._canvas.getContext) {
-      this._ctx = this._canvas.getContext('2d');
+    if (this.canvas && this.canvas.getContext) {
+      this.ctx = this.canvas.getContext('2d');
       this.resizeCanvas();
       // Events
-      this.addCanvasListeners(this._canvas);
+      this.addCanvasListeners(this.canvas);
       // Ball
       this.resetBall();
       // Main

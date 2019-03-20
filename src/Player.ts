@@ -5,7 +5,7 @@ import {
 
 export class Player {
   private _score: number = 0;
-  readonly paddle = new Paddle(
+  private paddle = new Paddle(
     this.paddleConfig,
     );
 
@@ -22,13 +22,21 @@ export class Player {
     return this._score;
   }
 
+  isWinner(maxScore: number): boolean {
+    return this.score === maxScore;
+  }
 
   incrementScore(): void {
     this._score += 1;
   }
 
-  movePaddle(y: number) {
+  movePaddle(y: number, height: number) {
     this.paddle.y = y;
+    this.paddle.setPaddleCenterToY(y, height);
+  }
+
+  drawPaddle(ctx: CanvasRenderingContext2D) {
+    this.paddle.draw(ctx);
   }
 
   getPaddleConfig(): PaddleConfig {
