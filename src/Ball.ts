@@ -62,8 +62,8 @@ export class Ball {
   }
 
   resetPositionToContainerCenter(containerHalfWidth: number, containerHalfHeight: number): void {
-    this._x = containerHalfWidth - Math.floor(this._radius / 2);
-    this._y = containerHalfHeight - Math.floor(this._radius / 2);
+    this._x = containerHalfWidth;
+    this._y = containerHalfHeight;
   }
 
   resetDirection(): void {
