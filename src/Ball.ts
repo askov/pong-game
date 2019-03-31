@@ -1,3 +1,4 @@
+/* tslint:disable:variable-name */
 export class Ball {
   constructor(
     private _color: string = 'gray',
@@ -6,7 +7,7 @@ export class Ball {
     private _y: number = 0,
     private _vx: number = 5,
     private _vy: number = 5,
-    ) {
+  ) {
   }
 
   get color(): string {

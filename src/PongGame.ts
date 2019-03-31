@@ -1,18 +1,17 @@
 import {
-  GameField
+  GameField,
 } from './GameField';
 import {
-  Ball
+  Ball,
 } from './Ball';
 import {
-  Player
+  Player,
 } from './Player';
 import {
-  FinalScreen
+  FinalScreen,
 } from './FinalScreen';
 
 import './styles/index.css';
-
 
 enum GameState {
   Running,
@@ -32,7 +31,7 @@ export class PongGame {
   private field = new GameField('#303030', window.innerWidth, window.innerHeight);
   private ball = new Ball('white', 10, 0, 0, 8, 4);
   private state = GameState.Running;
-  private players =[
+  private players = [
     new Player('You', {
       x: 0,
       y: 10,
@@ -45,15 +44,16 @@ export class PongGame {
       y: 10,
       width: this.paddleWidth,
       height: 90,
-      color: 'white'
+      color: 'white',
     }),
   ];
 
-  constructor(private canvas: HTMLCanvasElement) {}
+  constructor(private canvas: HTMLCanvasElement) {
+  }
 
   // Ball
   private getCurrentBallZone(player: Player): BallZone {
-    const { width , y: paddleY, height, } = player.getPaddleConfig();
+    const { width, y: paddleY, height } = player.getPaddleConfig();
     const {
       x,
       y,
@@ -61,8 +61,8 @@ export class PongGame {
     } = this.ball;
 
     if (
-        (x - radius <= 0 + width) ||
-        (x + radius >= this.field.width - width)
+      (x - radius <= 0 + width) ||
+      (x + radius >= this.field.width - width)
     ) {
       if ((y > (paddleY - radius)) && (y < (paddleY + height + radius))) {
         return BallZone.Reflect;
@@ -87,7 +87,7 @@ export class PongGame {
       y,
       reverseVxDirection,
       reverseVyDirection,
-      move
+      move,
     } = this.ball;
 
     const {
@@ -96,8 +96,8 @@ export class PongGame {
     } = this.field;
 
     if (
-        isBottomBorder(y + radius) ||
-        isTopBorder(y - radius)
+      isBottomBorder(y + radius) ||
+      isTopBorder(y - radius)
     ) {
       reverseVyDirection();
     }
@@ -106,8 +106,8 @@ export class PongGame {
     // player     <-o   opponent
     // opponent   o->   player
     const [player, opponent] = this.ball.vx > 0
-        ? [...this.players].reverse()
-        : this.players;
+      ? [...this.players].reverse()
+      : this.players;
 
     const ballState = this.getCurrentBallZone(player);
 
@@ -126,7 +126,7 @@ export class PongGame {
 
   // Paddles
   private drawPaddles(): void {
-    this.players.forEach(player => {
+    this.players.forEach((player) => {
       player.drawPaddle(this.ctx);
     });
   }
@@ -164,11 +164,11 @@ export class PongGame {
   }
 
   private addCanvasListeners(canvas: HTMLCanvasElement) {
-    canvas.addEventListener('mousemove', (e)=>{
+    canvas.addEventListener('mousemove', (e) => {
       this.handleMouseMove(e.clientY);
     });
 
-    canvas.addEventListener('click', ()=>{
+    canvas.addEventListener('click', () => {
       this.handleMouseClick();
     });
   }
@@ -186,7 +186,7 @@ export class PongGame {
       // Background
       this.field.draw(this.ctx, this.players[0].score, this.players[1].score);
       // Ball
-      this.moveBall();
+      // this.moveBall();
       this.ball.draw(this.ctx);
       // Paddles
       this.drawPaddles();
@@ -213,6 +213,5 @@ export class PongGame {
       window.requestAnimationFrame(this.run);
     }
   }
-
 
 }

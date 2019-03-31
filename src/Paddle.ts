@@ -1,3 +1,4 @@
+/* tslint:disable:variable-name */
 export class Paddle {
   [key: string]: any;
 
@@ -52,13 +53,12 @@ export class Paddle {
   }
 
   draw(ctx: CanvasRenderingContext2D): void {
-    const {color, x, y, width, height} = this;
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, width, height);
+    ctx.fillStyle = this.color;
+    ctx.fillRect(this.x, this.y, this.width, this.height);
   }
 
   private calculatePaddleYByTargetYx(paddleHeight: number, y: number) {
-    const halfPaddleHeight = Math.floor(paddleHeight / 2 );
+    const halfPaddleHeight = Math.floor(paddleHeight / 2);
     const minYLimit = halfPaddleHeight;
     const maxYLimit = this._gameField.height - halfPaddleHeight;
     if (y < minYLimit) {
@@ -71,15 +71,13 @@ export class Paddle {
   }
 
   private calculateYByTargetY(targetY: number, fieldHeight: number) {
-    const halfPaddleHeight = Math.floor(this.height / 2 );
+    const halfPaddleHeight = Math.floor(this.height / 2);
     const minYLimit = halfPaddleHeight;
     const maxYLimit = fieldHeight - halfPaddleHeight;
-    // console.log('#some', targetY, halfPaddleHeight);
     if (targetY < minYLimit) {
       return 0;
     }
     if (targetY > maxYLimit) {
-      console.log('#132', fieldHeight - this.heigth);
       return fieldHeight - this.height;
     }
     return targetY - halfPaddleHeight;

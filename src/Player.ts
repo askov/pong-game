@@ -1,18 +1,19 @@
+/* tslint:disable:variable-name */
 import {
-  Paddle
+  Paddle,
 } from './Paddle';
-
 
 export class Player {
   private _score: number = 0;
   private paddle = new Paddle(
     this.paddleConfig,
-    );
+  );
 
   constructor(
     private _name: string = 'Player',
     private paddleConfig?: PaddleConfig,
-  ) { }
+  ) {
+  }
 
   get name(): string {
     return this._name;
@@ -46,7 +47,7 @@ export class Player {
       height: this.paddle.height,
       x: this.paddle.x,
       y: this.paddle.y,
-    }
+    };
   }
 
   reset(): void {
