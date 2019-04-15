@@ -11,7 +11,7 @@ import {
   FinalScreen,
 } from './FinalScreen';
 
-import './styles/index.css';
+import '../styles/index.css';
 
 enum GameState {
   Running,
@@ -29,7 +29,7 @@ export class PongGame {
   private readonly paddleWidth = 20;
   private ctx: CanvasRenderingContext2D;
   private field = new GameField('#303030', window.innerWidth, window.innerHeight);
-  private ball = new Ball('white', 10, 0, 0, 8, 4);
+  private ball = new Ball({ color: 'white', vx: 8, vy: 4 });
   private state = GameState.Running;
   private players = [
     new Player('You', {
@@ -186,7 +186,7 @@ export class PongGame {
       // Background
       this.field.draw(this.ctx, this.players[0].score, this.players[1].score);
       // Ball
-      // this.moveBall();
+      this.moveBall();
       this.ball.draw(this.ctx);
       // Paddles
       this.drawPaddles();

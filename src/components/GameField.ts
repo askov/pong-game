@@ -1,30 +1,23 @@
+import RectangleGameObject from './general/RectangleGameObject';
+
 /* tslint:disable:variable-name */
-export class GameField {
+export class GameField extends RectangleGameObject {
   constructor(
-    private _color: string = 'gray',
-    private _width: number = 300,
-    private _height: number = 200,
+    color: string,
+    width: number,
+    height: number,
   ) {
+    super();
+    this.color = color;
+    this.width = width;
+    this.height = height;
   }
-
-  get color(): string {
-    return this._color;
-  }
-
-  get width(): number {
-    return this._width;
-  }
-
-  get height(): number {
-    return this._height;
-  }
-
   get halfWidth(): number {
-    return Math.floor(this._width / 2);
+    return Math.floor(this.width / 2);
   }
 
   get halfHeight(): number {
-    return Math.floor(this._height / 2);
+    return Math.floor(this.height / 2);
   }
 
   isTopBorder = (y: number): boolean => {
@@ -32,7 +25,7 @@ export class GameField {
   }
 
   isBottomBorder = (y: number): boolean => {
-    return y >= this._height;
+    return y >= this.height;
   }
 
   private drawScore(ctx: CanvasRenderingContext2D, score1: number, score2: number): void {
