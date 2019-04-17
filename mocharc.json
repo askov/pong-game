@@ -1,0 +1,14 @@
+{
+  "diff": true,
+  "extension": ["ts"],
+  "package": "./package.json",
+  "files": {
+    "rootDirectory": "src/test",
+    "includes": "**/*.test.ts"
+  },
+  "reporter": "spec",
+  "slow": 75,
+  "timeout": 2000,
+  "ui": "bdd",
+  "assertion": "chai"
+}

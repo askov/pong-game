@@ -12,13 +12,14 @@ export class Ball extends GameObject {
       this[`_${key}`] = config[key];
     });
   }
-  move = (): void => {
-    this._x += this._vx;
-    this._y += this._vy;
-  }
 
   get radius(): number {
     return this._radius;
+  }
+
+  move = (): void => {
+    this._x += this._vx;
+    this._y += this._vy;
   }
 
   reverseVyDirection = () => {
@@ -28,7 +29,6 @@ export class Ball extends GameObject {
   reverseVxDirection = () => {
     this._vx *= -1;
   }
-
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = this.color;
     ctx.beginPath();

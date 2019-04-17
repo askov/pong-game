@@ -6,13 +6,17 @@
   "scripts": {
     "build": "webpack --env.production",
     "start": "webpack-dev-server --env.development --open",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha src/test/**/*.spec.ts"
   },
   "author": "Alex Askov",
   "license": "ISC",
   "devDependencies": {
+    "@types/mocha": "^5.2.6",
+    "@types/node": "^11.13.4",
+    "chai": "^4.2.0",
     "css-loader": "^2.1.0",
     "html-webpack-plugin": "^3.2.0",
+    "mocha": "^6.1.3",
     "style-loader": "^0.23.1",
     "ts-loader": "^5.3.3",
     "tslint": "^5.14.0",
