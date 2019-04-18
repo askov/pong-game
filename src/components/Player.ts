@@ -2,6 +2,7 @@
 import {
   Paddle,
 } from './Paddle';
+import { PaddleConfig } from '../../app';
 
 export class Player {
   private _score: number = 0;
@@ -21,6 +22,10 @@ export class Player {
 
   get score(): number {
     return this._score;
+  }
+
+  reset(): void {
+    this._score = 0;
   }
 
   isWinner(maxScore: number): boolean {
@@ -50,7 +55,4 @@ export class Player {
     };
   }
 
-  reset(): void {
-    this._score = 0;
-  }
 }

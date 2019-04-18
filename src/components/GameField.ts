@@ -12,12 +12,18 @@ export class GameField extends RectangleGameObject {
     this.width = width;
     this.height = height;
   }
+
   get halfWidth(): number {
     return Math.floor(this.width / 2);
   }
 
   get halfHeight(): number {
     return Math.floor(this.height / 2);
+  }
+
+  draw(ctx: CanvasRenderingContext2D, score1: number, score2: number): void {
+    this.drawBackground(ctx);
+    this.drawScore(ctx, score1, score2);
   }
 
   isTopBorder = (y: number): boolean => {
@@ -61,11 +67,6 @@ export class GameField extends RectangleGameObject {
     ctx.setLineDash([8, 3]);
     ctx.lineTo(this.halfWidth, this.height);
     ctx.stroke();
-  }
-
-  draw(ctx: CanvasRenderingContext2D, score1: number, score2: number): void {
-    this.drawBackground(ctx);
-    this.drawScore(ctx, score1, score2);
   }
 
 }

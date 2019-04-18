@@ -1,4 +1,4 @@
-interface GameObjectBasic {
+export interface GameObjectBasic {
   color?: string;
   x?: number;
   y?: number;
@@ -6,11 +6,11 @@ interface GameObjectBasic {
   vy?: number;
 }
 
-interface PaddleConfig extends GameObjectBasic {
+export interface PaddleConfig extends GameObjectBasic {
   width?: number;
   height?: number;
 }
 
-interface BallConfig extends GameObjectBasic {
+export interface BallConfig extends GameObjectBasic {
   radius?: number;
 }

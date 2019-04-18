@@ -78,7 +78,7 @@ export class PongGame {
       halfHeight,
       halfWidth,
     } = this.field;
-    this.ball.resetBall(halfWidth, halfHeight);
+    this.ball.reset(halfWidth, halfHeight);
   }
 
   private moveBall(): void {

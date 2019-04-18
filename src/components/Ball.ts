@@ -1,9 +1,11 @@
 import GameObject from './general/GameObject';
+import { BallConfig } from '../../app';
 
 /* tslint:disable:variable-name */
 export class Ball extends GameObject {
   [key: string]: any;
   private _radius: number = 10;
+
   constructor(
     config?: Partial<BallConfig>,
   ) {
@@ -17,18 +19,6 @@ export class Ball extends GameObject {
     return this._radius;
   }
 
-  move = (): void => {
-    this._x += this._vx;
-    this._y += this._vy;
-  }
-
-  reverseVyDirection = () => {
-    this._vy *= -1;
-  }
-
-  reverseVxDirection = () => {
-    this._vx *= -1;
-  }
   draw(ctx: CanvasRenderingContext2D): void {
     ctx.fillStyle = this.color;
     ctx.beginPath();
@@ -36,9 +26,14 @@ export class Ball extends GameObject {
     ctx.fill();
   }
 
-  resetPositionToContainerCenter(containerHalfWidth: number, containerHalfHeight: number): void {
-    this._x = containerHalfWidth;
-    this._y = containerHalfHeight;
+  reset(containerHalfWidth: number, containerHalfHeight: number): void {
+    this.resetPosition(containerHalfWidth, containerHalfHeight);
+    this.resetDirection();
+  }
+
+  resetPosition(containerHalfWidth: number, containerHalfHeight: number): void {
+    this.x = containerHalfWidth;
+    this.y = containerHalfHeight;
   }
 
   resetDirection(): void {
@@ -46,8 +41,17 @@ export class Ball extends GameObject {
     this.reverseVyDirection();
   }
 
-  resetBall(containerHalfWidth: number, containerHalfHeight: number): void {
-    this.resetPositionToContainerCenter(containerHalfWidth, containerHalfHeight);
-    this.resetDirection();
+  reverseVxDirection = () => {
+    this.vx *= -1;
   }
+
+  reverseVyDirection = () => {
+    this.vy *= -1;
+  }
+
+  move = (): void => {
+    this.x += this.vx;
+    this.y += this.vy;
+  }
+
 }

@@ -31,4 +31,10 @@ export default class GameObject {
   get vy(): number {
     return this._vy;
   }
+  set vx(vx: number) {
+    this._vx = vx;
+  }
+  set vy(vy: number) {
+    this._vy = vy;
+  }
 }
