@@ -21,6 +21,16 @@ export class Paddle extends RectangleGameObject {
     this.y = this.calculateYByTargetY(y, fieldHeight);
   }
 
+  getConfig(): PaddleConfig {
+    return {
+      color: this.color,
+      width: this.width,
+      height: this.height,
+      x: this.x,
+      y: this.y,
+    };
+  }
+
   private calculateYByTargetY(targetY: number, fieldHeight: number) {
     const halfPaddleHeight = Math.floor(this.height / 2);
     const minYLimit = halfPaddleHeight;

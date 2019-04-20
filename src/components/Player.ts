@@ -24,10 +24,6 @@ export class Player {
     return this._score;
   }
 
-  reset(): void {
-    this._score = 0;
-  }
-
   isWinner(maxScore: number): boolean {
     return this.score === maxScore;
   }
@@ -36,8 +32,11 @@ export class Player {
     this._score += 1;
   }
 
+  reset(): void {
+    this._score = 0;
+  }
+
   movePaddle(y: number, height: number) {
-    this.paddle.y = y;
     this.paddle.setPaddleCenterToY(y, height);
   }
 
@@ -46,13 +45,7 @@ export class Player {
   }
 
   getPaddleConfig(): PaddleConfig {
-    return {
-      color: this.paddle.color,
-      width: this.paddle.width,
-      height: this.paddle.height,
-      x: this.paddle.x,
-      y: this.paddle.y,
-    };
+    return this.paddle.getConfig();
   }
 
 }

@@ -4,9 +4,10 @@ import { Paddle } from '../components/Paddle';
 
 describe('Paddle', () => {
   let paddle: Paddle = null;
+  const initialPaddleConfig = { width: 10, height: 50 };
 
   beforeEach(() => {
-    paddle = new Paddle({ width: 10, height: 50 });
+    paddle = new Paddle(initialPaddleConfig);
   });
 
   it('initializes correctly', () => {
@@ -33,4 +34,10 @@ describe('Paddle', () => {
     });
   });
 
+  describe('#getConfig', () => {
+    it('should return current paddle config', () => {
+      const config = paddle.getConfig();
+      expect(config).to.include(initialPaddleConfig);
+    });
+  });
 });
